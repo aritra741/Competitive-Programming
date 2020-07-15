@@ -1,0 +1,18 @@
+#include <bits/stdc++.h>
+using namespace std;
+/*
+Suffix array implementation using bucket sorting + lcp.
+Complexity O(n log n), str[] is the target string,
+nnn is its length and suffix[i] contains i’th sorted suffix
+position.
+*/
+/*
+1. Fill str[] with string or augmented string.
+2. Assign nnn length of str[].
+3. Call SortSuffix()
+4. Result is at two different arrays: suffix[i] contains index
+of i’th sorted string
+and sufRank[stp][i] contains rank of i’th suffix
+*/
+#define MAXN 5010
+#define MAXL 26

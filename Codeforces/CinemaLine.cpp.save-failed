@@ -1,0 +1,21 @@
+#include <bits/stdc++.h>
+#define ll long long
+using namespace std;
+int main()
+{
+    ll n;
+    cin>>n;
+    bool flag=0;
+    ll tw=0,fif=0,hun=0,tot=0;
+    ll temp;
+    for(int i=0;i<n;i++)
+    {
+        cin>>temp;
+        if(tot<=0)
+            {
+                flag=1;
+                break;
+            }
+
+    }
+}
