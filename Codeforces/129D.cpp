@@ -1,7 +1,12 @@
 #include<bits/stdc++.h>
 #define ll long long
 #define sc second
+#define mod 1000000007
+#define mx 200010
+#define inf 2e9
 using namespace std;
+
+char s[mx];
 
 class Automata
 {

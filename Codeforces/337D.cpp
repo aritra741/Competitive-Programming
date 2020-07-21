@@ -15,7 +15,7 @@ void dfs1( int u, int pre )
     sub_er_moddhe_mx[u]= -inf;
     sub_er_moddhe_2nd_mx[u]= -inf;
 
-    if(mark[u] and adj[u].size()==1 )
+    if(mark[u] )
         nichedure[u]= 0;
 
     for( auto v: adj[u] )
@@ -48,8 +48,6 @@ void dfs2( int u, int pre )
             uporedure[u]= max( uporedure[x]+1, sub_er_moddhe_2nd_mx[x]+2 );
         else
             uporedure[u]= max( uporedure[x]+1, sub_er_moddhe_mx[x]+2 );
-
-//        cout<<" "<<x<<" "<<u<<" "<<sub_er_moddhe_mx[x]<<" "<<sub_er_moddhe_2nd_mx[x]<<endl;
     }
 
     for( auto v: adj[u] )
@@ -80,16 +78,28 @@ int main()
     }
 
     dfs1( 1,1 );
-    uporedure[1]= 0;
+    if(mark[1])
+        uporedure[1]= 0;
     dfs2( 1,1 );
 
     int ans= 0;
 
     for( int i=1; i<=n; i++ )
-    {
         if( max( nichedure[i], uporedure[i] )<=d and max( nichedure[i], uporedure[i] )>=0 )
             ans++;
-    }
 
     cout<< ans <<endl;
 }
+/*
+10 2 2
+5 1
+1 2
+2 3
+3 4
+4 5
+5 6
+6 7
+7 8
+8 9
+9 10
+*/
