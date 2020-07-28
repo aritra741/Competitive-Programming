@@ -1,12 +1,7 @@
 #include<bits/stdc++.h>
 #define ll long long
 #define sc second
-#define mod 1000000007
-#define mx 200010
-#define inf 2e9
 using namespace std;
-
-char s[mx];
 
 class Automata
 {
@@ -119,22 +114,23 @@ int main()
 {
     ios_base::sync_with_stdio(0);
     cin.tie(0);
-    cout.tie(0);
 
     string s;
     cin>>s;
 
     cin>>k;
 
+    ll sz= s.size();
+
+    if( (sz*(sz+1)/2<k ) )
+      return cout<<"No such line.\n", 0;
+
     sa= Automata( s.size() );
 
     for( int i=0;i<s.size();i++ )
         sa.addLetter( s[i] );
 
-    ll sz= s.size();
-
-    if( (sz*(sz+1)/2<k ) )
-      return cout<<"No such line.\n", 0;
+    sa.count_sub_str();
 
     kth(0);
 

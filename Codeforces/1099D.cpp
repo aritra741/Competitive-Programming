@@ -1,28 +1,50 @@
 #include<bits/stdc++.h>
+#define inf 1000000000
+#define ll long long
 #define mx 100007
 using namespace std;
 
 vector<int>adj[mx];
-int par[mx], col[mx];
+int h[mx], a[mx];
+bool f;
+ll ans;
 
-int ans= 0;
-bool f= 1;
-
-void dfs( int u, bool dep )
+void dfs( int u, int now )
 {
-    if(!f)
+    if(f)
         return;
-    if( par[u]!=u and dep )
+
+    if( h[u]>-1 )
     {
-        if( col[u]<col[ par[ par[u] ] ] )
+        a[u]= h[u]-now;
+
+        if( a[u]<0 )
         {
-            f= 0;
+            f= 1;
+            return;
+        }
+    }
+    else
+    {
+        a[u]= inf;
+
+        for( auto v: adj[u] )
+            a[u]= min( a[u], h[v]-now );
+
+        if( a[u]==inf )
+            a[u]= 0;
+
+        if( a[u]<0 )
+        {
+            f= 1;
             return;
         }
     }
 
     for( auto v: adj[u] )
-        dfs( v, dep^1 );
+        dfs( v, now+a[u] );
+
+    ans+= a[u];
 }
 
 int main()
@@ -35,17 +57,16 @@ int main()
         int p;
         cin>>p;
 
-        par[i]= p;
         adj[p].push_back(i);
     }
 
     for( int i=1;i<=n;i++ )
-        cin>> col[i], ans= max( ans, col[i] );
+        cin>> h[i];
 
-    dfs(1,1);
+    dfs( 1, 0 );
 
-    if(!f)
-        cout<<"-1"<<endl;
-    else
-        cout<<ans<<endl;
+    if( f )
+        return cout<<"-1", 0;
+
+    cout<< ans <<endl;
 }
