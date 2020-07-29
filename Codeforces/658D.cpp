@@ -7,7 +7,7 @@ bool dp[4007][2007];
 int vs[4007][2007];
 int pp;
 
-bool rec( int i, int x )
+bool func( int i, int x )
 {
     if(x>n)
         return 0;
@@ -18,8 +18,8 @@ bool rec( int i, int x )
     if( vs[i][x]==pp )
         return dp[i][x];
 
-    bool q1= rec( i+1, x );
-    bool q2= rec( i+1, x+v[i] );
+    bool q1= func( i+1, x );
+    bool q2= func( i+1, x+v[i] );
 
     vs[i][x]= pp;
 
@@ -58,8 +58,7 @@ int main()
             v.push_back(cnt);
 
         m= v.size();
-
-        bool ans= rec( 0, 0 );
+        int ans= func( 0, 0 );
 
         if(ans)
             cout<<"YES\n";
