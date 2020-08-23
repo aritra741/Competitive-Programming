@@ -2,7 +2,7 @@
 #define ll long long
 #define mx (1<<16)-1
 using namespace std;
-
+ 
 namespace ntt
 {
 struct num
@@ -180,62 +180,63 @@ vector<int> square(vector<int> &a,int m)
     return multiply(a,a,m,1);
 }
 };
-
+ 
 using namespace ntt;
-
+ 
 vector<ll> save[4];
-
+ 
 int main()
 {
-//    ios_base::sync_with_stdio(0);
-//    cin.tie(0);
 
     string s,t;
     cin>>s;
     cin>>t;
-
+ 
     vector<ll>a(s.size(),0),b(s.size(),0);
-
+ 
     for( int i=0;i<s.size();i++ )
         a[i]= (s[i]=='A');
-
+ 
     int j= t.size()-1;
     for( int i=0;j>=0;i++ )
         b[i]= (t[j--]=='A');
-
+ 
     save[0]= multiply( a,b );
-
+ 
     for( int i=0;i<s.size();i++ )
         a[i]= (s[i]=='C');
-
+ 
     j= t.size()-1;
     for( int i=0;j>=0;i++ )
         b[i]= (t[j--]=='C');
-
+ 
     save[1]= multiply( a,b );
-
+ 
     for( int i=0;i<s.size();i++ )
         a[i]= (s[i]=='T');
-
+ 
     j= t.size()-1;
     for( int i=0;j>=0;i++ )
         b[i]= (t[j--]=='T');
-
+ 
     save[2]= multiply( a,b );
-
+ 
     for( int i=0;i<s.size();i++ )
         a[i]= (s[i]=='G');
-
+ 
     j= t.size()-1;
     for( int i=0;j>=0;i++ )
         b[i]= (t[j--]=='G');
-
+ 
     save[3]= multiply( a,b );
-
+ 
     ll ans= 0;
-
+ 
     for( int i=t.size()-1;i<s.size();i++ )
+    {
         ans= max( ans, save[0][i]+save[1][i]+save[2][i]+save[3][i] );
-
+    }
+ 
     cout<< t.size()-ans <<'\n';
 }
+ 

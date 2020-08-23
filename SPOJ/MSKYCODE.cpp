@@ -1,4 +1,6 @@
-#include<bits/stdc++.h>
+#include<iostream>
+#include<vector>
+#include<stdio.h>
 #define mx 10007
 #define ll long long
 using namespace std;
@@ -59,15 +61,10 @@ int mp[mx];
 
 int main()
 {
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
-
     init();
     int n;
 
-    cout<<sign[6]<<" "<<sign[12]<<endl;
-
-    while(cin>>n)
+    while(scanf("%d", &n)==1)
     {
         int arr[n+5];
 
@@ -98,12 +95,15 @@ int main()
 
         for( int i=0; i<n; i++ )
         {
-            for( auto x: v[ arr[i] ] )
+            for( int j=0;j<v[ arr[i] ].size();j++ )
+            {
+                int x= v[ arr[i] ][j];
                 baad-= sign[ x ]*nc3( mp[x]-1, 3 );
+            }
             v[ arr[i] ].clear();
         }
 
-        cout<< ans-baad/4 <<'\n';
+        printf("%lld\n", ans-baad/4);
 
         for( int i=0; i<mx; i++ )
             mp[i]= 0;
