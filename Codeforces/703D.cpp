@@ -3,70 +3,47 @@
 #define pii pair<int,int>
 #define ff first
 #define ss second
+#define lchild 2*node
+#define rchild lchild+1
+#define mid (l+r)/2
+#define mx 1000007
 using namespace std;
 
-int arr[1000007], pref[1000007];
-int cnt[1000007];
+int arr[mx], pref[mx];
+map<int,int>last;
+int tree[4*mx];
 int val;
+int ans[mx];
+std::vector<pii> v[mx];
 
-inline int64_t gilbertOrder(int x, int y, int pow, int rotate) {
-	if (pow == 0) {
-		return 0;
-	}
-	int hpow = 1 << (pow - 1);
-	int seg = (x < hpow) ? (
-	              (y < hpow) ? 0 : 3
-	          ) : (
-	              (y < hpow) ? 1 : 2
-	          );
-	seg = (seg + rotate) & 3;
-	const int rotateDelta[4] = {3, 0, 0, 1};
-	int nx = x & (x ^ hpow), ny = y & (y ^ hpow);
-	int nrot = (rotate + rotateDelta[seg]) & 3;
-	int64_t subSquareSize = int64_t(1) << (2 * pow - 2);
-	int64_t ans = seg * subSquareSize;
-	int64_t add = gilbertOrder(nx, ny, pow - 1, nrot);
-	ans += (seg == 1 || seg == 2) ? add : (subSquareSize - add - 1);
-	return ans;
-}
-
-struct query
+void update( int node, int l, int r, int i, int x )
 {
-	int l, r, id;
-	ll ord;
-
-	void calcord()
+	if(l>i or r<i)
+		return;
+	if(l>=i and r<=i)
 	{
-		ord = gilbertOrder(l, r, 21, 0);
+		tree[node]= x;
+		return;
 	}
 
-} qq[1000007];
+	update( lchild, l, mid, i, x );
+	update( rchild, mid+1, r, i, x );
 
-bool cmp(query &a, query &b) {
-	return a.ord < b.ord;
+	tree[node]= tree[lchild]^tree[rchild];
 }
 
-inline void jog( int id )
+int query( int node, int l, int r, int i, int j )
 {
-	cnt[ arr[id] ]++;
+	if( l>j or r<i )
+		return 0;
+	if( l>=i and r<=j )
+		return tree[node];
 
-	if( cnt[ arr[id] ]&1 and cnt[ arr[id] ]>=3 )
-		val^= arr[id];
-	else if( cnt[ arr[id] ]%2==0 )
-		val^= arr[id]; 
+	int q1= query( lchild, l, mid, i, j );
+	int q2= query( rchild, mid+1, r, i, j );
+
+	return q1^q2;
 }
-
-inline void baad( int id )
-{
-	cnt[ arr[id] ]--;
-
-	if( cnt[ arr[id] ]&1 )
-		val^= arr[id];
-	else if( cnt[ arr[id] ] and cnt[ arr[id] ]%2==0 )
-		val^= arr[id];
-}
-
-int ans[1000007];
 
 int main()
 {
@@ -74,7 +51,7 @@ int main()
 	scanf("%d", &n);
 
 	for ( int i = 1; i <= n; i++ )
-		scanf("%d", &arr[i]);
+		scanf("%d", &arr[i]), pref[i]= arr[i]^pref[i-1];
 
 	int q;
 	scanf("%d", &q);
@@ -84,23 +61,19 @@ int main()
 		int l, r;
 		scanf("%d %d", &l, &r);
 
-		qq[i].l = l;
-		qq[i].r = r;
-		qq[i].id = i;
-		qq[i].calcord();
+		v[r].push_back({l,i});
 	}
 
-	sort( qq + 1, qq + 1 + q, cmp );
-
-	int l = 1, r = 0;
-	for ( int i = 1; i <= q; i++ )
+	for( int i=1;i<=n;i++ )
 	{
-		while (r < qq[i].r) jog(++r);
-		while (l > qq[i].l) jog(--l);
-		while (l < qq[i].l) baad(l++);
-		while (r > qq[i].r) baad(r--);
+		if( last[arr[i]] )
+			update( 1, 1, n, last[arr[i]], 0 );
 
-		ans[ qq[i].id ] = val;
+		last[arr[i]]= i;
+		update( 1, 1, n, i, arr[i] );
+
+		for( auto x: v[i] )
+			ans[x.ss]= pref[i]^query( 1, 1, n, x.ff, i )^pref[x.ff-1];
 	}
 
 	for ( int i = 1; i <= q; i++ )
