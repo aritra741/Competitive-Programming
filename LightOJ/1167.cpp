@@ -103,56 +103,58 @@ struct Dinic
 
 int main()
 {
-	int tc;
-	scanf("%d", &tc);
+    int tc;
+    scanf("%d", &tc);
 
-	for( int t=1;t<=tc;t++ )
-	{
-		int n;
-        double d;
-        scanf("%d %lf", &n, &d);
+    for ( int t = 1; t <= tc; t++ )
+    {
+        int n;
+        scanf("%d", &n);
+        int m;
+        scanf("%d", &m);
 
-        int x[n+5], y[n+5], m[n+5], cnt[n+5];
+        int d[m + 7];
+        pii edg[m + 7];
 
-        int tot= 0;
-
-        for( int i=1;i<=n;i++ )
+        for ( int i = 0; i < m; i++ )
         {
-            scanf("%d %d %d %d", &x[i], &y[i], &cnt[i], &m[i]);
-            tot+= cnt[i];
+            int p, q;
+            scanf("%d %d %d", &p, &q, &d[i]);
+
+            edg[i] = {p, q};
         }
 
-        std::vector<int> v;
+        int k;
+        scanf("%d", &k);
 
-        for( int i=1;i<=n;i++ )
+        int l = 1, r = 100000, ans = -1;
+
+        while (l <= r)
         {
-            Dinic Din( 2*n+5, 2*n+1, i );
-            for( int j=1;j<=n;j++ )
-            {
-                Din.add_edge( 2*n+1, j, cnt[j] );
-                Din.add_edge( j, j+n, m[j] );
-                for( int k=1;k<=n;k++ )
-                {
-                    if(j==k)
-                        continue;
+            int mid = (l + r) / 2;
 
-                    if( ( x[j]-x[k] )*( x[j]-x[k] )+( y[j]-y[k] )*( y[j]-y[k] )+1e-9<=d*d )
-                        Din.add_edge( j+n, k, Din.flow_inf );
-                }
-            }
+            Dinic Din( 2 * n + 7, 2 * n + 4, 2 * n + 5 );
+            Din.add_edge( 2 * n + 4, 0, k );
+            Din.add_edge( n + 1, 2 * n + 5, k );
+            Din.add_edge( 0, 0 + n + 2, k );
 
-            if( Din.flow()==tot )
-                v.push_back(i-1);
+            for ( int i = 1; i <= n; i++ )
+                Din.add_edge( i, i + n + 2, 1 );
+
+            for ( int i = 0; i < m; i++ )
+                if ( d[i] <= mid )
+                    Din.add_edge( min(edg[i].first, edg[i].second) + n + 2, max(edg[i].first, edg[i].second), 1 );
+
+            int pq = Din.flow();
+            if ( pq == k )
+                ans = mid, r = mid - 1;
+            else
+                l = mid + 1;
         }
 
-		printf("Case %d: ", t);
-
-        for( int i=0;i<(int)v.size()-1;i++ )
-            printf("%d ", v[i]);
-
-        if( v.size() )
-            printf("%d\n", v.back());
+        if (ans > -1)
+            printf("Case %d: %d\n", t, ans);
         else
-            printf("-1\n");
-	}
+            printf("Case %d: no solution\n", t);
+    }
 }

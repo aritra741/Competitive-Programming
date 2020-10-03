@@ -101,58 +101,53 @@ struct Dinic
     }
 };
 
+int idx[507];
+
 int main()
 {
-	int tc;
-	scanf("%d", &tc);
+    int n,m;
+    scanf("%d %d", &n, &m);
 
-	for( int t=1;t<=tc;t++ )
-	{
-		int n;
-        double d;
-        scanf("%d %lf", &n, &d);
+    Dinic Din( n+7, 1, n );
 
-        int x[n+5], y[n+5], m[n+5], cnt[n+5];
+    for( int i=0;i<m;i++ )
+    {
+        int u,v;
+        scanf("%d %d", &u, &v);
 
-        int tot= 0;
+        Din.add_edge(u,v,1);
+    }
 
-        for( int i=1;i<=n;i++ )
-        {
-            scanf("%d %d %d %d", &x[i], &y[i], &cnt[i], &m[i]);
-            tot+= cnt[i];
-        }
+    ll fl= Din.flow();
 
-        std::vector<int> v;
+    printf("%lld\n", fl);
 
-        for( int i=1;i<=n;i++ )
-        {
-            Dinic Din( 2*n+5, 2*n+1, i );
-            for( int j=1;j<=n;j++ )
-            {
-                Din.add_edge( 2*n+1, j, cnt[j] );
-                Din.add_edge( j, j+n, m[j] );
-                for( int k=1;k<=n;k++ )
-                {
-                    if(j==k)
-                        continue;
+    for( auto e: Din.edges )
+        if( e.flow>0 )
+            Din.usedInFlow[e.v].push_back(e.u);
 
-                    if( ( x[j]-x[k] )*( x[j]-x[k] )+( y[j]-y[k] )*( y[j]-y[k] )+1e-9<=d*d )
-                        Din.add_edge( j+n, k, Din.flow_inf );
-                }
-            }
+    std::vector<int> v[fl];
+    int i= 0;
 
-            if( Din.flow()==tot )
-                v.push_back(i-1);
-        }
+    for( auto e: Din.usedInFlow[1] )
+    {
+        idx[1]++;
 
-		printf("Case %d: ", t);
+        v[i].push_back(1);
 
-        for( int i=0;i<(int)v.size()-1;i++ )
-            printf("%d ", v[i]);
+        while(e!=n)
+            v[i].push_back(e), e= Din.usedInFlow[e][idx[e]++];
 
-        if( v.size() )
-            printf("%d\n", v.back());
-        else
-            printf("-1\n");
-	}
+        v[i++].push_back(n);
+    }
+
+    for( int i=0;i<fl;i++ )
+    {
+        printf("%d\n", v[i].size());
+
+        for( auto x: v[i] )
+            printf("%d ", x);
+
+        printf("\n");
+    }
 }

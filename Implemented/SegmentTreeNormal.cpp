@@ -1,11 +1,11 @@
 #include <bits/stdc++.h>
-#define MX 100007
+#define MX 500007
 using namespace std;
 
 int arr[MX];
 struct{
-    int sum, lazy;
-}tree[MX*3] ;
+    int mx;
+}tree[MX*4] ;
 
 void build( int node, int l, int r )
 {

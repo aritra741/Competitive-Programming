@@ -108,51 +108,32 @@ int main()
 
 	for( int t=1;t<=tc;t++ )
 	{
-		int n;
-        double d;
-        scanf("%d %lf", &n, &d);
+		int m,w;
+		scanf("%d %d", &m, &w);
 
-        int x[n+5], y[n+5], m[n+5], cnt[n+5];
+		Dinic Din(m*2+5,1,m);
 
-        int tot= 0;
+		int cost[m+7];
 
-        for( int i=1;i<=n;i++ )
-        {
-            scanf("%d %d %d %d", &x[i], &y[i], &cnt[i], &m[i]);
-            tot+= cnt[i];
-        }
+		for( int i=2;i<m;i++ )
+			scanf("%d", &cost[i]), Din.add_edge( i, i+m, cost[i] );
 
-        std::vector<int> v;
+		for( int i=0;i<w;i++ )
+		{
+			int u,v,c;
+			scanf("%d %d %d", &u, &v, &c);
 
-        for( int i=1;i<=n;i++ )
-        {
-            Dinic Din( 2*n+5, 2*n+1, i );
-            for( int j=1;j<=n;j++ )
-            {
-                Din.add_edge( 2*n+1, j, cnt[j] );
-                Din.add_edge( j, j+n, m[j] );
-                for( int k=1;k<=n;k++ )
-                {
-                    if(j==k)
-                        continue;
+			int x= u,y= v;
 
-                    if( ( x[j]-x[k] )*( x[j]-x[k] )+( y[j]-y[k] )*( y[j]-y[k] )+1e-9<=d*d )
-                        Din.add_edge( j+n, k, Din.flow_inf );
-                }
-            }
+			if(u!=1 and u!=m)
+				x+= m;
+			if(v!=1 and v!=m)
+				y+= m;
 
-            if( Din.flow()==tot )
-                v.push_back(i-1);
-        }
+			Din.add_edge( x,v,c );
+			Din.add_edge( y,u,c );
+		}
 
-		printf("Case %d: ", t);
-
-        for( int i=0;i<(int)v.size()-1;i++ )
-            printf("%d ", v[i]);
-
-        if( v.size() )
-            printf("%d\n", v.back());
-        else
-            printf("-1\n");
+		printf("Case %d: %d\n", t, Din.flow() );
 	}
 }

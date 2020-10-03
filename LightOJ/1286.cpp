@@ -5,14 +5,14 @@
 #define f first
 #define s second
 using namespace std;
-
+ 
 struct FlowEdge
 {
     int v, u;
     long long cap, flow = 0;
     FlowEdge(int v, int u, long long cap) : v(v), u(u), cap(cap) {}
 };
-
+ 
 struct Dinic
 {
     const long long flow_inf = 1e18;
@@ -22,7 +22,7 @@ struct Dinic
     int s, t;
     vector<int> level, ptr;
     queue<int> q;
-
+ 
     Dinic(int n, int s, int t) : n(n), s(s), t(t)
     {
         adj.resize(n);
@@ -30,7 +30,7 @@ struct Dinic
         ptr.resize(n);
         usedInFlow.resize(n);
     }
-
+ 
     void add_edge(int v, int u, long long cap)
     {
         edges.emplace_back(v, u, cap);
@@ -39,7 +39,7 @@ struct Dinic
         adj[u].push_back(m + 1);
         m += 2;
     }
-
+ 
     bool bfs()
     {
         while (!q.empty())
@@ -58,7 +58,7 @@ struct Dinic
         }
         return level[t] != -1;
     }
-
+ 
     long long dfs(int v, long long pushed)
     {
         if (pushed == 0)
@@ -80,7 +80,7 @@ struct Dinic
         }
         return 0;
     }
-
+ 
     long long flow()
     {
         long long f = 0;
@@ -100,59 +100,53 @@ struct Dinic
         return f;
     }
 };
-
+ 
 int main()
 {
-	int tc;
-	scanf("%d", &tc);
-
-	for( int t=1;t<=tc;t++ )
-	{
-		int n;
-        double d;
-        scanf("%d %lf", &n, &d);
-
-        int x[n+5], y[n+5], m[n+5], cnt[n+5];
-
-        int tot= 0;
-
-        for( int i=1;i<=n;i++ )
+    int tc;
+    scanf("%d", &tc);
+ 
+    for( int t=1;t<=tc;t++ )
+    {
+        int m,n;
+        scanf("%d%d", &m, &n);
+ 
+        Dinic Din( m+n+7, m+n+1, m+n+2 );
+ 
+        int tot= 0, p[m+5];
+ 
+        for( int i=1;i<=m;i++ )
         {
-            scanf("%d %d %d %d", &x[i], &y[i], &cnt[i], &m[i]);
-            tot+= cnt[i];
+            scanf("%d", &p[i]);
+            tot+= p[i];
+            Din.add_edge( m+n+1, i, p[i] );
         }
-
-        std::vector<int> v;
-
+ 
+        int c[n+5];
+ 
         for( int i=1;i<=n;i++ )
         {
-            Dinic Din( 2*n+5, 2*n+1, i );
-            for( int j=1;j<=n;j++ )
+            scanf("%d", &c[i]);
+            Din.add_edge( i+m, m+n+2, c[i] );
+        }
+ 
+        for( int i=1;i<=m;i++ )
+        {
+            int q;
+            scanf("%d", &q);
+ 
+            for( int j=1;j<=q;j++ )
             {
-                Din.add_edge( 2*n+1, j, cnt[j] );
-                Din.add_edge( j, j+n, m[j] );
-                for( int k=1;k<=n;k++ )
-                {
-                    if(j==k)
-                        continue;
-
-                    if( ( x[j]-x[k] )*( x[j]-x[k] )+( y[j]-y[k] )*( y[j]-y[k] )+1e-9<=d*d )
-                        Din.add_edge( j+n, k, Din.flow_inf );
-                }
+                int pp;
+                scanf("%d", &pp);
+ 
+                Din.add_edge( i, pp+m, Din.flow_inf );
             }
-
-            if( Din.flow()==tot )
-                v.push_back(i-1);
         }
-
-		printf("Case %d: ", t);
-
-        for( int i=0;i<(int)v.size()-1;i++ )
-            printf("%d ", v[i]);
-
-        if( v.size() )
-            printf("%d\n", v.back());
-        else
-            printf("-1\n");
-	}
+ 
+        int ans= max( 0LL, tot-Din.flow() );
+ 
+        printf("Case %d: %d\n", t, ans);
+    }
 }
+ 

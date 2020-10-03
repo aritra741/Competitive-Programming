@@ -108,51 +108,47 @@ int main()
 
 	for( int t=1;t<=tc;t++ )
 	{
-		int n;
-        double d;
-        scanf("%d %lf", &n, &d);
+		int n,m;
+		scanf("%d %d", &n, &m);
 
-        int x[n+5], y[n+5], m[n+5], cnt[n+5];
+		int r[n+7], c[m+7];
+		int x= 0, y= 0;
 
-        int tot= 0;
+		for( int i=1;i<=n;i++ )
+			scanf("%d", &r[i]), y= r[i], r[i]-= x, x= y;
+		x= 0, y= 0;
+		for( int i=1;i<=m;i++ )
+			scanf("%d", &c[i]), y= c[i], c[i]-= x, x= y;
+		
+		Dinic Din( n+m+7, n+m+1, m+n+2 );
 
-        for( int i=1;i<=n;i++ )
-        {
-            scanf("%d %d %d %d", &x[i], &y[i], &cnt[i], &m[i]);
-            tot+= cnt[i];
-        }
+		for( int i=1;i<=n;i++ )
+		{
+			Din.add_edge( n+m+1, i, r[i]-m );
 
-        std::vector<int> v;
+			for( int j=1;j<=m;j++ )
+				Din.add_edge( i, j+n, 19 );
+		}
 
-        for( int i=1;i<=n;i++ )
-        {
-            Dinic Din( 2*n+5, 2*n+1, i );
-            for( int j=1;j<=n;j++ )
-            {
-                Din.add_edge( 2*n+1, j, cnt[j] );
-                Din.add_edge( j, j+n, m[j] );
-                for( int k=1;k<=n;k++ )
-                {
-                    if(j==k)
-                        continue;
+		for( int i=1;i<=m;i++ )
+			Din.add_edge( i+n, n+m+2, c[i]-n );
 
-                    if( ( x[j]-x[k] )*( x[j]-x[k] )+( y[j]-y[k] )*( y[j]-y[k] )+1e-9<=d*d )
-                        Din.add_edge( j+n, k, Din.flow_inf );
-                }
-            }
+		printf("Matrix %d\n", t);
 
-            if( Din.flow()==tot )
-                v.push_back(i-1);
-        }
+		int ff= Din.flow();
 
-		printf("Case %d: ", t);
+		int ans[n+5][m+5];
 
-        for( int i=0;i<(int)v.size()-1;i++ )
-            printf("%d ", v[i]);
+		for( int i=1;i<=n;i++ )
+			for( auto e: Din.adj[i] )
+				if( Din.edges[e].v==i and Din.edges[e].flow>=0 )
+					ans[i][Din.edges[e].u-n]= Din.edges[e].flow+1;
 
-        if( v.size() )
-            printf("%d\n", v.back());
-        else
-            printf("-1\n");
+		for( int i=1;i<=n;i++ )
+			for( int j=1;j<=m;j++ )
+				printf("%d%c", ans[i][j], (j==m)?'\n':' ');
+
+		if(t<tc)
+			printf("\n");
 	}
 }
