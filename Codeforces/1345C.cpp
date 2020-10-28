@@ -1,35 +1,44 @@
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 using namespace std;
 
 int main()
 {
-    int tc;
-    scanf("%d", &tc);
+	int tc;
+	cin>>tc;
 
-    while(tc--)
-    {
-        int n;
-        scanf("%d", &n);
+	while(tc--)
+	{
+		int n;
+		cin>>n;
 
-        int arr[n+5];
-        map<int,int>mp;
+		int arr[n+5];
+		map<int,int>mp;
 
-        for( int i=0;i<n;i++ )
-            scanf("%d", &arr[i]);
+		for( int i=0;i<n;i++ )
+		{
+			cin>>arr[i], mp[i]++;
 
-        bool f= 1;
+			arr[i]%= n;
 
-        for( int i=0;i<=n;i++ )
-        {
-            mp[ i+arr[i%n] ]++;
+			if(arr[i]<n)
+				arr[i]+= n;
+		}
+		
+		bool f= 1;
 
-            if(mp[ i+arr[i%n] ]>1)
-                f= 0;
-        }
+		for( int i=0;i<n;i++ )
+		{
+			mp[i]--;
+			mp[(i+arr[i])%n]++;			
+		}
 
-        if(!f)
-            printf("NO\n");
-        else
-            printf("YES\n");
-    }
+		for( auto x: mp )
+			if(x.second>1)
+				f= 0;
+
+		if(f)
+			cout<<"YES\n";
+		else
+			cout<<"NO\n";
+	}	
 }
