@@ -12,14 +12,13 @@ int grundy( int x )
 
     int mid= (x&1)?x/2:(x-1)/2;
 
-    set<int>st;
+    bitset<16400>st;
+    st.set();
+
     for( int i=1;i<=mid;i++ )
-        st.insert( grundy(i)^grundy(x-i) );
-    int ans= 0;
+        st[grundy(i)^grundy(x-i)]= 0;
 
-    while( st.find(ans)!=st.end() )
-        ans++;
-
+    int ans= st._Find_first();
     return dp[x]= ans;
 }
 

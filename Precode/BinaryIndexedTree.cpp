@@ -1,42 +1,40 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-void Update(int BIT[], int i, int n, int val)
-{
-
-    while(i<=n)
-    {
-        BIT[i]+=val;
-        i=i+(i & -i);   ///going to child node
+// 1-indexed, [1, n]
+template<class T>
+class BIT {
+    T bit[MN];
+    int n;
+ 
+public:
+    BIT() {
+        n = MN;
+        memset(bit, 0, sizeof(bit));
     }
-}
-
-int getsum(int BIT[], int i, int n)
-{
-    int sum=0;
-    while(i>0)
-    {
-        sum+=BIT[i];
-        i=i-(i & -i);    ///going to parent by removing the set bit
+ 
+    T sum(int i) {
+        ++i;
+        T s = 0;
+        while (i > 0) {
+            s += bit[i];
+            i -= i & -i;
+        }
+        return s;
     }
-    return sum;
-
-}
+ 
+    void add(int i, T x) {
+        ++i;
+        while (i < n) {
+            bit[i] += x;
+            i += i & -i;
+        }
+    }
+};
 
 int main()
 {
-    int n;
-    cin>>n;
-    int arr[n+1]={0};
-    for(int i=1;i<=n;i++)
-    {
-        int temp;
-        cin>>temp;
-        Update(arr, i, n, temp);
-    }
-    int ind;
-    cin>>ind;
-    cout<<getsum(arr, ind, n);
-    int ans=getsum(arr, 4, 5);
-
+    BIT<int> T;
+    T.add(x, 2);
+    T.sum(x - 1);
 }
