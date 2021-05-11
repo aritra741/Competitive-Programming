@@ -1,67 +1,56 @@
-#include<stdio.h>
-#include<iostream>
-#include<math.h>
-#include<assert.h>
+#include <bits/stdc++.h>
+#define pii pair<int,int>
+#define ff first
+#define ss second
+#define ll long long
+#define fast ios_base::sync_with_stdio(0);cin.tie(0);
+#define mx 1000007
 using namespace std;
-#define print1(a) cout<<a<<endl
-#define print2(a,b) cout<<a<<" "<<b<<endl
-#define lim 1000100
-#define LL long long
-int grundy[5][lim];
 
-LL sqrto(LL n)
+ll stbr3( ll n )
 {
-    LL ret=sqrt(n);
-    if(ret*ret>n) ret--;
-    else ret++;
-    if(ret*ret>n) ret--;
-    return ret;
+	if(n<0)
+		return 0;
+	return ((n-1)*(n-2))/2;
 }
 
-int makegrundy(LL n)
+ll stbr2( ll n )
 {
-    int i;
-    LL st=sqrt(sqrt(n));
-    if(st*st*st*st==n) st--;
-    LL end=sqrt(n);
-    if(end>=n) end--;
-    //print2(st+1,end);
-    for(i=0;;i++)
-        if(grundy[i][end]-grundy[i][st]<=0)
-            break;
-    assert(i<=4);
-    if(n<lim)
-    {
-        for(int i=0;i<=4;i++)
-            grundy[i][n]=grundy[i][n-1];
-        grundy[i][n]++;
-    }
-    //if(n==1) print2(n,i);
-    return i;
+	if(n<0)
+		return 0;
+	return n-1;
 }
 
 int main()
 {
-    int i;
-    for(i=1;i<lim;i++)
-        makegrundy(i);
-    //print1(ans);
-    int n;
-    while(cin>>n)
-    {
-        int i;
-        LL val;
-        int ans=0;
-        for(i=1;i<=n;i++)
-        {
-            cin>>val;
-            ans^=makegrundy(val);
-           cout<<val<<" "<<makegrundy(val)<<endl;
-        }
+	fast;
 
-        if(ans>0)
-            print1("Furlo");
-        else print1("Rublo");
-    }
-    return 0;
+	ll n,k;
+	cin>>n>>k;
+
+	ll baki= k, gese= 0;
+
+	for( ll i=1;i<=n;i++ )
+	{
+		ll now= 1+n*n;
+		cout<<i<<" "<<baki<<" "<<now+gese<<endl;
+		if( baki-now-gese>0 )
+		{
+			gese+= now;
+			continue;
+		}
+
+		for( int j=1;j<=n;j++ )
+		{
+			ll pore= now-i-j;
+			// cout<<i<<" "<<j<<" "<<pore<<" "<<baki<<endl;
+			if( 1LL*(i-1)*n*n+1LL*(j-1)*n+pore+gese+1==baki )
+			{
+				cout<<i<<" "<<j<<" "<<pore;
+				return 0;
+			}
+		}
+
+		gese+= now;
+	}
 }

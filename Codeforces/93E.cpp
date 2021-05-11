@@ -39,7 +39,7 @@ int main()
 	for( int i=1;i<=k;i++ )
 		cin>>arr[i];
 
-	sort( arr+1, arr+k+1 );
+	sort( arr+1, arr+k+1, greater<int>() );
 
 	cout<< rec( n, k );
 }
