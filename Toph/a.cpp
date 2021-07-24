@@ -1,212 +1,179 @@
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
+#define fast ios_base::sync_with_stdio(0);cin.tie(0);
+#define mod 1000000007
+#define yes() cout<<"Yes\n"
+#define no() cout<<"No\n"
+#define mod 1000000007
+#define ll long long
+#define mx 200007
+#define pii pair<ll,ll>
+#define piii pair<ll,pii>
+#define ff first
+#define ss second
 using namespace std;
-
-#define FAST ios_base::sync_with_stdio(false);cin.tie(NULL);
-#define endl '\n'
-
-typedef long long ll;
-typedef pair<int,int> pii;
 
 #include <ext/pb_ds/assoc_container.hpp>
 #include <ext/pb_ds/tree_policy.hpp>
-#include <ext/pb_ds/detail/standard_policies.hpp>
 using namespace __gnu_pbds;
-typedef tree<int, null_type, less<int>, rb_tree_tag, tree_order_statistics_node_update> ost; // set
-typedef tree<int, null_type, less_equal<int>, rb_tree_tag, tree_order_statistics_node_update> indexed_multiset; // multiset
+typedef tree<int, null_type, less<int>, rb_tree_tag, tree_order_statistics_node_update> ordered_set;
+typedef tree<int, null_type, less_equal<int>, rb_tree_tag, tree_order_statistics_node_update> ordered_multiset;
 
+std::vector<int> v[10];
+ll dp[10][260][10][3];
+bool vis[10][260][10][3];
+bool vv[2][10];
+int n, k;
+string s[10];
 
-// direction array
-int dx[]={1,-1,0,0};
-int dy[]={0,0,1,-1};
-
-// Bitmask
-
-/*
-bool check(int mask,int pos){return mask&(1<<pos);}
-int SET(int mask,int pos){return mask|(1<<pos);}
-int FLIP(int mask,int pos){return mask^(1<<pos);}
-int reset(int mask,int pos){return mask&~(1 << pos);}
-
-*/
-
-#include <bits/stdc++.h>
-#define ll long long
-using namespace std;
-
-struct point
+ll rec( int i, int mask, int koyta, bool con )
 {
-    ll x,y,g;
+	// cout<<i<<" "<<mask<<" "<<koyta<<" "<<con<<endl;
+	if ( i >= n )
+	{
+		if( koyta==k and con )
+			return 1;
+		return 0;
+	}
 
-    point(){}
-    point( ll a, ll b, ll c ){
-    	x= a;
-    	y= b;
-    	g= c;
-    }
+	if ( vis[i][mask][koyta][con] )
+		return dp[i][mask][koyta][con];
 
-} base;
+	int p = v[i - 1].size();
 
+	int m = v[i].size();
 
-ll operator | (point a,point b){
-    return a.x*b.x+a.y*b.y;
-}
-ll operator * (point a,point b){
-    return a.x*b.y-a.y*b.x;
-}
-point operator - (point a,point b){
-    return point(a.x-b.x,a.y-b.y,a.g);
-}
+	ll ret = 0;
 
-vector<point> points;
+	for ( int kk = 0; kk < (1 << m); kk++ )
+	{
+		int tot = __builtin_popcount(kk);
 
-int Size;
+		if ( tot + koyta > k )
+			continue;
 
-bool operator == (point a, point b)
-{
-    return a.x==b.x and a.y==b.y;
-}
+		if( !tot and koyta )
+			continue;
 
-int area( point p, point q, point r )
-{
-    ll x[]= {p.x, q.x, r.x};
-    ll y[]= {p.y, q.y, r.y};
+		// cout<<i<<" "<<kk<<" entered \n";
 
-    ll a= 0;
-    int j= 2;
+		memset(vv, 0, sizeof(vv));
+		queue<pii>q;
 
-    for(int i=0; i<3; i++)
-    {
-        a+=(x[j]+x[i])*(y[j]-y[i]);
-        j= i;
-    }
+		for ( int j = 0; j < p; j++ )
+			if ( mask & (1 << j) )
+				vv[0][ v[i - 1][j] ] = 1, q.push({0, v[i - 1][j]});
 
-    if(a>0)
-        return 1;
-    if(a<0)
-        return 2;
-    return 0;
-}
+		int done = 0;
 
-ll dist( point a, point b )
-{
-    return (a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y);
-}
+		while (!q.empty())
+		{
+			pii u = q.front();
+            q.pop();
 
-bool half(point p) { return p.y > 0 || (p.y == 0 && p.x < 0);}
-void polar_sort(vector<point> &v) {
-    sort(v.begin(), v.end(), [](point a,point b) {
-        return make_tuple(half(a-base),0,(a-base)|(a-base))<make_tuple(half(b-base),(a-base)*(b-base),(b-base)|(b-base));
-    });
+            cout<<" "<<u.ff<<endl;
+
+			if ( !u.ff )
+			{
+				if ( s[i][u.ss] == '.' and !vv[1][u.ss] and (kk & (1 << u.ss)) )
+				{
+					q.push({1, u.ss}), done++;
+					vv[1][u.ss] = 1;
+				}
+			}
+			else
+			{
+				if ( u.ss - 1 >= 0 and s[i][u.ss - 1] == '.' and !vv[1][u.ss - 1] and (kk & (1 << (u.ss - 1))) )
+				{
+					q.push({1, u.ss - 1}), done++;
+					vv[1][u.ss - 1] = 1;
+				}
+				if ( u.ss + 1 < n and s[i][u.ss + 1] == '.' and !vv[1][u.ss + 1] and (kk & (1 << (u.ss + 1))) )
+				{
+					q.push({1, u.ss + 1}), done++;
+					vv[1][u.ss + 1] = 1;
+				}
+			}
+		}
+
+		cout<<i<<" "<<kk<<" "<<tot<<" "<<done<<endl;
+
+		if ( done == tot )
+		{
+			if (con)
+			{
+				ret = ( ret + rec( i + 1, kk, koyta + tot, con ) );
+			}
+			else
+			{
+				bool hoise = 1;
+				int last = -1;
+
+				for ( int j = 0; j < m; j++ )
+				{
+					if ( kk & (1 << j) and last>-1 and v[i][j] != last + 1 )
+					{
+						hoise = 0;
+						break;
+					}
+					else if ( kk & (1 << j) )
+						last = v[i][j];
+				}
+
+				if ( hoise )
+					ret = ( ret + rec( i + 1, kk, koyta + tot, 1 ) );
+				else
+					ret = ( ret + rec( i + 1, kk, koyta + tot, con ) );
+			}
+		}
+	}
+
+	vis[i][mask][koyta][con] = 1;
+	return dp[i][mask][koyta][con] = ret;
 }
 
 int main()
 {
-	FAST;
+//	fast;
 
-	int n;
-	cin>>n;
+	cin >> n >> k;
 
-	ll tot= 0;
-
-	for( int i=0;i<n;i++ )
+	for ( int i = 0; i < n; i++ )
 	{
-		ll x,y,g;
-		cin>>x>>y>>g;
+		cin >> s[i];
 
-		tot+= g;
-		points.push_back(point(x,y,g));
+		for ( int j = 0; j < n; j++ )
+			if ( s[i][j] == '.' )
+				v[i].push_back(j);
 	}
 
-	if(n<3)
-		return cout<<"0\n", 0;
+	ll ans = 0;
+	int m= v[0].size();
 
-	// cout<<tot<<endl;
-	ll out= 1e18;
-
-	for( int i=0;i<n;i++ )
+	for ( int mask = 0; mask < 1; mask++ )
 	{
-		base= points[i];
+		int tot = __builtin_popcount(mask);
 
-		std::vector<point> v;
+		if (tot > k)
+			continue;
 
-		for( auto x: points )
-			if( x.x!=base.x or x.y!=base.y  )
-				v.push_back(x);
+		bool hoise = 1;
+		int last = -1;
 
-		ll suff[n+5]= {};
-		suff[n]= 0;
-		ll pre[n+5]= {};
-
-		polar_sort(v);
-		pre[0]= v[0].g;
-
-		for( int j=1;j<v.size();j++ )
-			pre[j]= pre[j-1]+v[j].g;
-
-		for( int j=v.size()-1;j>=0;j-- )
-			suff[j]= suff[j+1]+v[j].g;
-
-		// cout<<tot<<endl;
-
-		for( int j=0;j<v.size();j++ )
+		for ( int j = 0; j < m; j++ )
 		{
-			// cout<<v[j].x<<" "<<v[j].y<<" ";
-			ll now= tot-base.g;
-			now-= v[j].g;
-
-			int l= j+1;
-			int r= v.size()-1;
-			int ans1= -1;
-			int p= area(base, v[j], v.back());
-
-			while(l<=r)
+			if ( mask & (1 << j) and last>-1 and  v[0][j] != last + 1 )
 			{
-				int mid= (l+r)/2;
-
-				if(area(base, v[j], v[mid])==p)
-					ans1= mid, r= mid-1;
-				else
-					l= mid+1;
+				hoise = 0;
+				break;
 			}
-
-			l= 0,r=j-1;
-			ll ans2= -1;
-
-			p= area(base, v[j], v[0]);
-			while(l<=r)
-			{
-				int mid= (l+r)/2;
-
-				if(area(base, v[j], v[mid])==p)
-					ans2= mid, l= mid+1;
-				else
-					r= mid-1;
-			}			
-			
-			ll agey, pore;
-
-			if(ans1==-1)
-				pore= 0;
-			else
-				pore= suff[ans1];
-
-			if(ans2==-1)
-				agey= 0;
-			else
-				agey= pre[ans2];
-
-			ll ekdik= pore+agey;
-			ll onnodik= now-ekdik;
-
-			// cout<<ekdik<<" "<<onnodik<<endl;
-			// cout<<pore<<" "<<onnodik<<endl;
-			out= min( out, llabs(ekdik-onnodik) );
-
-			// cout<<i<<" "<<j<<" "<<llabs(ekdik-onnodik)<<endl;
-			// pre+= v[j].g;
-			// cout<<" "<<pre<<" "<<v[j].g<<endl;
+			else if ( mask & (1 << j) )
+				last = v[0][j];
 		}
+
+		// cout<<mask<<endl;
+
+		ans += rec( 1, mask, tot, hoise );
 	}
 
-	cout<<out<<endl;
+	cout<< ans;
 }
