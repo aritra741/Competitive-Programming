@@ -18,162 +18,124 @@ using namespace __gnu_pbds;
 typedef tree<int, null_type, less<int>, rb_tree_tag, tree_order_statistics_node_update> ordered_set;
 typedef tree<int, null_type, less_equal<int>, rb_tree_tag, tree_order_statistics_node_update> ordered_multiset;
 
-std::vector<int> v[10];
-ll dp[10][260][10][3];
-bool vis[10][260][10][3];
-bool vv[2][10];
-int n, k;
-string s[10];
+map<string,int>stint;
+map<int,string>intst;
+std::vector<int> adj[200007];
+map<int,int>mat[200007], ulta[200007];
+vector< vector<string> > ret;
+bool mark[507], point[200007];
 
-ll rec( int i, int mask, int koyta, bool con )
+void dfs( int u, vector<string>& ans )
 {
-	// cout<<i<<" "<<mask<<" "<<koyta<<" "<<con<<endl;
-	if ( i >= n )
+	// cout<<u<<"\n";
+
+	if( u>1 )
+		ans.push_back( intst[u] ),
+		ret.push_back( ans );
+
+	// for( auto x: ans )
+	// 	cout<<" "<<x<<endl;
+
+	for( auto v: adj[u] )
 	{
-		if( koyta==k and con )
-			return 1;
-		return 0;
+		// cout<<v<<" "<<mat[u][v]<<" "<<point[v]<<" "<<mark[ mat[u][v] ]<<endl;
+		if( !mat[u][v] )
+			continue;
+
+		if( point[v] and mark[ mat[u][v] ] )
+			continue;
+
+		dfs( v, ans );
 	}
 
-	if ( vis[i][mask][koyta][con] )
-		return dp[i][mask][koyta][con];
+	if(u>1)
+		ans.pop_back();
+}
 
-	int p = v[i - 1].size();
+vector<vector<string>> deleteDuplicateFolder(vector<vector<string>>& paths) {
+	
+	int cnt= 2, pt= 0;
 
-	int m = v[i].size();
-
-	ll ret = 0;
-
-	for ( int kk = 0; kk < (1 << m); kk++ )
+	for( auto x: paths )
 	{
-		int tot = __builtin_popcount(kk);
+		int last= 1;
+		pt++;
 
-		if ( tot + koyta > k )
-			continue;
-
-		if( !tot and koyta )
-			continue;
-
-		// cout<<i<<" "<<kk<<" entered \n";
-
-		memset(vv, 0, sizeof(vv));
-		queue<pii>q;
-
-		for ( int j = 0; j < p; j++ )
-			if ( mask & (1 << j) )
-				vv[0][ v[i - 1][j] ] = 1, q.push({0, v[i - 1][j]});
-
-		int done = 0;
-
-		while (!q.empty())
+		for( auto y: x )
 		{
-			pii u = q.front();
-            q.pop();
+			if( !stint[y] )
+				stint[y]= cnt, intst[cnt++]= y;
+			
+			if(!mat[last][stint[y]])
+				adj[last].push_back(stint[y]);
 
-            cout<<" "<<u.ff<<endl;
+			mat[last][stint[y]]= pt;
 
-			if ( !u.ff )
-			{
-				if ( s[i][u.ss] == '.' and !vv[1][u.ss] and (kk & (1 << u.ss)) )
-				{
-					q.push({1, u.ss}), done++;
-					vv[1][u.ss] = 1;
-				}
-			}
-			else
-			{
-				if ( u.ss - 1 >= 0 and s[i][u.ss - 1] == '.' and !vv[1][u.ss - 1] and (kk & (1 << (u.ss - 1))) )
-				{
-					q.push({1, u.ss - 1}), done++;
-					vv[1][u.ss - 1] = 1;
-				}
-				if ( u.ss + 1 < n and s[i][u.ss + 1] == '.' and !vv[1][u.ss + 1] and (kk & (1 << (u.ss + 1))) )
-				{
-					q.push({1, u.ss + 1}), done++;
-					vv[1][u.ss + 1] = 1;
-				}
-			}
-		}
-
-		cout<<i<<" "<<kk<<" "<<tot<<" "<<done<<endl;
-
-		if ( done == tot )
-		{
-			if (con)
-			{
-				ret = ( ret + rec( i + 1, kk, koyta + tot, con ) );
-			}
-			else
-			{
-				bool hoise = 1;
-				int last = -1;
-
-				for ( int j = 0; j < m; j++ )
-				{
-					if ( kk & (1 << j) and last>-1 and v[i][j] != last + 1 )
-					{
-						hoise = 0;
-						break;
-					}
-					else if ( kk & (1 << j) )
-						last = v[i][j];
-				}
-
-				if ( hoise )
-					ret = ( ret + rec( i + 1, kk, koyta + tot, 1 ) );
-				else
-					ret = ( ret + rec( i + 1, kk, koyta + tot, con ) );
-			}
+			if(last>1)
+				ulta[stint[y]][last]= pt;
+			
+			last= stint[y];
 		}
 	}
 
-	vis[i][mask][koyta][con] = 1;
-	return dp[i][mask][koyta][con] = ret;
+
+	for( int i=2;i<cnt;i++ )
+	{
+		if(ulta[i].size()<2)
+			continue;
+
+		for( auto x: ulta[i] )
+		{
+			point[x.first]= 1;
+			mark[mat[x.first][i]]= 1;
+			mat[x.first][i]= 0;
+		}
+	}
+
+	vector<string>ss;
+
+	dfs(1,ss);
+
+	// for( auto x: ret )
+	// {
+	// 	for( auto y: x )
+	// 		cout<<y<<" ";
+
+	// 	cout<<endl;
+	// }
+
+	return ret;
 }
 
 int main()
 {
 //	fast;
 
-	cin >> n >> k;
+	std::vector< vector<string> > v;
 
-	for ( int i = 0; i < n; i++ )
-	{
-		cin >> s[i];
-
-		for ( int j = 0; j < n; j++ )
-			if ( s[i][j] == '.' )
-				v[i].push_back(j);
-	}
-
-	ll ans = 0;
-	int m= v[0].size();
-
-	for ( int mask = 0; mask < 1; mask++ )
-	{
-		int tot = __builtin_popcount(mask);
-
-		if (tot > k)
-			continue;
-
-		bool hoise = 1;
-		int last = -1;
-
-		for ( int j = 0; j < m; j++ )
-		{
-			if ( mask & (1 << j) and last>-1 and  v[0][j] != last + 1 )
-			{
-				hoise = 0;
-				break;
-			}
-			else if ( mask & (1 << j) )
-				last = v[0][j];
-		}
-
-		// cout<<mask<<endl;
-
-		ans += rec( 1, mask, tot, hoise );
-	}
-
-	cout<< ans;
+	std::vector<string> x;
+	x.push_back("a");
+	x.push_back("b");
+	v.push_back(x);
+	x.clear();
+	x.push_back("a");
+	v.push_back(x);
+	x.clear();
+	x.push_back("c");
+	v.push_back(x);
+	x.clear();
+	x.push_back("d");
+	v.push_back(x);
+	x.clear();
+	x.push_back("c");
+	x.push_back("b");
+	v.push_back(x);
+	x.clear();
+	x.push_back("d");
+	x.push_back("a");
+	v.push_back(x);
+	x.clear();
+	
+	
+	deleteDuplicateFolder(v);
 }

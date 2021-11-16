@@ -1,27 +1,23 @@
 #include <bits/stdc++.h>
+#define ll long long
 using namespace std;
 
 int main()
 {
-	int tc;
-	cin>>tc;
+	ll n;
+	cin>>n;
 
-	while(tc--)
+	ll ans= 0;
+
+	for( ll a=1;a*a*a<=n;a++ )
 	{
-		int s;
-		cin>>s;
+		ll bc= n/a;
 
-		int ans;
-
-		for( int i=1;;i++ )
+		for( ll b=a;b*b<=bc;b++ )
 		{
-			if( i*i>=s )
-			{
-				ans= i;
-				break;
-			}
+			ans+= (bc/b)-b+1;
 		}
-
-		cout<<ans<<"\n";
 	}
+
+	cout<<ans;
 }
